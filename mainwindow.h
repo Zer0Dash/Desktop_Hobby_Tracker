@@ -1,64 +1,104 @@
 #ifndef MAINWINDOW_HPP
 #define MAINWINDOW_HPP
 
-#include <QHeaderView>
-#include <QList>
-#include <QPointF>
-#include <QPushButton>
-#include <QStackedWidget>
-#include <QString>
-#include <QTableWidget>
-#include <QTime>
-#include <QTimer>
-#include <QWidget>
-#include <QtCharts/QBarCategoryAxis>
-#include <QtCharts/QBarSeries>
-#include <QtCharts/QBarSet>
-#include <QtCharts/QChartView>
-#include <QtCharts/QPieSeries>
-#include <QtCharts/QPieSlice>
-#include <QtCharts/QValueAxis>
+#include "apimanager.h"
 
+#include <QWidget>
+#include <QStackedWidget>
+#include <QPushButton>
+#include <QButtonGroup>
+#include <QScrollArea>
+#include <QComboBox>
+#include <QDateEdit>
+#include <QLineEdit>
+#include <QTimer>
+#include <QTime>
+#include <QDateTime>
+#include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
-#include <QVBoxLayout>
+#include <QFrame>
+#include <QList>
+#include <QString>
+
+#include <QtCharts/QChartView>
 #include <QtCharts/QChart>
-#include <QtCharts/QLineSeries>
+#include <QtCharts/QPieSeries>
+#include <QtCharts/QPieSlice>
+
+struct HobbyItem {
+    QString hobbyId;
+    QString name;
+    double totalHours = 0.0;
+    int activitiesCount = 0;
+    double hoursPerDay = 0.0;
+
+    QPushButton *navButton = nullptr;
+    QWidget *pageWidget = nullptr;
+    QLabel *titleLabel = nullptr;
+    QLabel *totalHoursValueLabel = nullptr;
+    QLabel *activitiesValueLabel = nullptr;
+    QLabel *hoursPerDayValueLabel = nullptr;
+};
 
 class MainWindow : public QWidget {
-  Q_OBJECT
+    Q_OBJECT
 
 public:
-  explicit MainWindow(QWidget *parent = nullptr);
-  virtual ~MainWindow();
+    explicit MainWindow(ApiManager *api, QWidget *parent = nullptr);
+    virtual ~MainWindow();
+    void loadInitialData();
+
+signals:
+    void logoutRequested();
 
 private:
-  QStackedWidget *stackedWidget;
+    ApiManager *apiManager;
 
-  QPushButton *btnMain;
-  QPushButton *btnHobby;
-  QPushButton *btnProgramming;
+    QStackedWidget *stackedWidget;
+    QButtonGroup *navButtonGroup;
+    QVBoxLayout *hobbiesListLayout;
 
-  void setupUI();
-  void applyStyles();
+    QPushButton *btnMain;
+    QPushButton *btnStats;
+    QPushButton *btnAddHobby;
+    QPushButton *btnLeave;
 
-  QChartView *createChart(const QString &title, const QList<QPointF> &points);
-  void switchTab(int index);
+    QComboBox *hobbySelector;
+    QLineEdit *noteInput;
+    QTimer *sessionTimer;
+    int sessionSeconds;
+    int pendingSessionSeconds;
+    int totalSessionSeconds;
+    QDateTime currentSessionStartedAt;
+    QLabel *stopwatchLabel;
+    QLabel *totalTimeLabel;
 
-  QWidget *createProgrammingTab();
-  QChartView *createPieChart(const QString &title);
-  QChartView *createBarChart(const QString &title,
-                             const QStringList &categories,
-                             const QList<int> &values);
+    QDateEdit *dateFromEdit;
+    QDateEdit *dateToEdit;
+    QLabel *commonTotalHoursLabel;
+    QLabel *commonActivitiesLabel;
+    QLabel *commonHoursPerDayLabel;
+    QPieSeries *overviewPieSeries;
 
-  QTimer *sessionTimer;
-  int sessionSeconds;
-  QLabel *stopwatchLabel;
+    QList<HobbyItem> hobbies;
 
-  QWidget *createMainTab();
+    void setupUI();
+    void setupApiConnections();
+    void applyStyles();
+    QWidget* createMainTab();
+    QWidget* createOverviewTab();
+    QWidget* createHobbyTab(HobbyItem &hobby);
+    QWidget* createStatCard(const QString &caption, QLabel **valueLabelOut);
 
-  QLabel *totalTimeLabel;
-  int totalSessionSeconds;
+    void upsertHobby(const QString &hobbyId, const QString &name, double totalHours = 0.0, int activities = 0, double hoursPerDay = 0.0);
+    void removeHobbyLocally(const QString &hobbyId);
+    void clearAllHobbies();
+    void showAddHobbyDialog();
+    void showRenameHobbyDialog(const QString &hobbyId, const QString &currentName);
+    void updateHobbyCardValues(HobbyItem &hobby);
+    void updateOverviewChart();
+    void requestStatsRefresh();
 };
 
 #endif

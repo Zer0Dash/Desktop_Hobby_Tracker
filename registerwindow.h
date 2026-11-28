@@ -1,29 +1,29 @@
 #ifndef REGISTERWINDOW_H
 #define REGISTERWINDOW_H
 
-#include "apimanager.h"
-#include <QLabel>
+#include <QWidget>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QLabel>
 #include <QVBoxLayout>
-#include <QWidget>
+#include "apimanager.h"
 
 class RegisterWindow : public QWidget {
-  Q_OBJECT
+    Q_OBJECT
 
 public:
-  explicit RegisterWindow(QWidget *parent = nullptr);
+    explicit RegisterWindow(ApiManager *api,QWidget *parent = nullptr);
 
 signals:
-  void registerSuccessful();
-  void loginRequested();
+    void registerSuccessful();
+    void loginRequested();
 
 private:
-  QLineEdit *loginInput;
-  QLineEdit *passwordInput;
-  QLineEdit *passwordConfirmInput;
-  QLabel *errorLabel;
-  ApiManager *apiManager;
+    QLineEdit *loginInput;
+    QLineEdit *passwordInput;
+    QLineEdit *passwordConfirmInput;
+    QLabel *errorLabel;
+    ApiManager *apiManager;
 };
 
-#endif
+#endif // REGISTERWINDOW_H

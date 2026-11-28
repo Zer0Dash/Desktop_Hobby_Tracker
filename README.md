@@ -53,7 +53,7 @@ To get started, you need to install the IDE and compiler :
 Clone this repository with the source code:
 
 ```bash
-git clone https://github.com/Zer0Dash/Front_Hobby_Tracker
+git clone https://github.com/Zer0Dash/Desktop_Hobby_Tracker
 cd Front_Hobby_Tracker
 ```
 
